@@ -43,6 +43,8 @@ if (isset($_SESSION['user_id'])) {
     $stmt->execute([$_SESSION['user_id']]);
     $cart_count = $stmt->fetchColumn();
 }
+
+include 'includes/header.php';
 ?>
 
 <!DOCTYPE html>
@@ -105,72 +107,16 @@ if (isset($_SESSION['user_id'])) {
 </head>
 <body>
     <div class="hero-banner position-relative mb-5">
-        <img src="/vehicle-accessory-store/assets/images/hero.jpg" alt="Vehicle Accessories" class="w-100" style="max-height:340px; object-fit:cover; filter:brightness(0.5);">
+        <!-- Removed broken hero image -->
         <div class="hero-text position-absolute top-50 start-50 translate-middle text-center text-light" style="width:100%;">
             <h1 class="display-4 fw-bold animate__animated animate__fadeInDown">Upgrade Your Ride</h1>
             <p class="lead animate__animated animate__fadeInUp">Find the best accessories for your vehicle in the Philippines</p>
         </div>
     </div>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/vehicle-accessory-store/index.php">Vehicle Accessory Store</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/vehicle-accessory-store/index.php">Home</a>
-                    </li>
-                    <?php foreach ($categories as $category): ?>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/vehicle-accessory-store/index.php?category=<?php echo $category['id']; ?>">
-                                <?php echo htmlspecialchars($category['name']); ?>
-                            </a>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-                <form class="d-flex me-3" action="/vehicle-accessory-store/index.php" method="GET">
-                    <input class="form-control me-2" type="search" name="search" placeholder="Search products" value="<?php echo htmlspecialchars($search); ?>">
-                    <button class="btn btn-outline-light" type="submit">Search</button>
-                </form>
-                <ul class="navbar-nav">
-                    <?php if (isset($_SESSION['user_id'])): ?>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/vehicle-accessory-store/products/add.php">Add Product</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/vehicle-accessory-store/cart.php">
-                                <i class="bi bi-cart"></i> Cart
-                                <?php if ($cart_count > 0): ?>
-                                    <span class="badge bg-danger"><?php echo $cart_count; ?></span>
-                                <?php endif; ?>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/vehicle-accessory-store/dashboard.php">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/vehicle-accessory-store/auth/logout.php">Logout</a>
-                        </li>
-                    <?php else: ?>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/vehicle-accessory-store/auth/login.php">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/vehicle-accessory-store/auth/register.php">Register</a>
-                        </li>
-                    <?php endif; ?>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
     <div class="container mt-4">
         <?php if (isset($_SESSION['success'])): ?>
             <div class="alert alert-success"><?php echo $_SESSION['success']; unset($_SESSION['success']); ?></div>
         <?php endif; ?>
-
         <div class="row">
             <?php foreach ($products as $product): ?>
                 <div class="col-md-4 mb-4">
@@ -185,13 +131,22 @@ if (isset($_SESSION['user_id'])) {
                                     Seller: <?php echo htmlspecialchars($product['username']); ?>
                                 </small>
                             </p>
-                            <p class="card-text"><strong>₱<?php echo number_format($product['price'], 2); ?></strong></p>
+                            <p class="card-text mb-1"><strong>₱<?php echo number_format($product['price'], 2); ?></strong></p>
+                            <p class="card-text mb-2">
+                                <?php if (isset($product['stock'])): ?>
+                                    <?php if ($product['stock'] == 0): ?>
+                                        <span class="badge bg-danger">SOLD OUT</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-success">In Stock: <?php echo (int)$product['stock']; ?></span>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </p>
                             <div class="d-grid gap-2">
                                 <a href="/vehicle-accessory-store/products/view.php?id=<?php echo $product['id']; ?>" class="btn btn-primary">View Details</a>
                                 <?php if (isset($_SESSION['user_id'])): ?>
                                     <form action="/vehicle-accessory-store/cart/add.php" method="POST">
                                         <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                                        <button type="submit" class="btn btn-success w-100">Add to Cart</button>
+                                        <button type="submit" class="btn btn-success w-100" <?php echo (isset($product['stock']) && $product['stock'] == 0) ? 'disabled' : ''; ?>>Add to Cart</button>
                                     </form>
                                 <?php endif; ?>
                             </div>
@@ -201,7 +156,6 @@ if (isset($_SESSION['user_id'])) {
             <?php endforeach; ?>
         </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html> 

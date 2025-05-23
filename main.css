@@ -1,10 +1,10 @@
 html, body {
     height: 100%;
+    min-height: 100%;
     background: #1a1a1a !important;
     color: #e5e7eb !important;
 }
 body {
-    min-height: 100vh;
     font-family: 'Segoe UI', Arial, sans-serif;
     margin: 0;
     padding: 0;
@@ -305,8 +305,8 @@ main, .container {
 
 /* Vehicle animation background for auth pages */
 .vehicle-anim-bg {
-    position: fixed;
-    left: 0; top: 0; width: 100vw; height: 100vh;
+    position: absolute;
+    left: 0; top: 0; width: 100vw; min-height: 100vh; height: 100%;
     z-index: 0;
     pointer-events: none;
     overflow: hidden;
@@ -401,4 +401,34 @@ main, .container {
     width: 140px;
     bottom: 36vh;
     opacity: 0.25;
+}
+
+/* Home Button - Modern, Unique */
+.home-btn {
+  background: linear-gradient(90deg, #3ea6ff 0%, #60b8ff 100%);
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 2rem;
+  padding: 0.75rem 2.2rem;
+  box-shadow: 0 4px 18px #3ea6ff33;
+  transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+  display: inline-flex;
+  align-items: center;
+}
+.home-btn:hover, .home-btn:focus {
+  background: linear-gradient(90deg, #60b8ff 0%, #3ea6ff 100%);
+  color: #fff !important;
+  box-shadow: 0 6px 24px #3ea6ff55;
+  text-decoration: none;
+}
+
+#my-products-link {
+  font-weight: 600;
+  color: #3ea6ff !important;
+}
+#my-products-link:hover {
+  color: #60b8ff !important;
+  text-decoration: underline;
 } 

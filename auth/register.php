@@ -2,8 +2,19 @@
 session_start();
 require_once '../config/database.php';
 
-// Fetch security questions
-$questions = $conn->query("SELECT * FROM security_questions")->fetchAll();
+// Hardcoded security questions
+$security_questions = [
+    1 => 'What was your first pet\'s name?',
+    2 => 'In which city were you born?',
+    3 => 'What is your mother\'s maiden name?',
+    4 => 'What was your childhood nickname?',
+    5 => 'What is the name of your favorite childhood teacher?',
+    6 => 'What was the make of your first car?',
+    7 => 'What is your favorite movie?',
+    8 => 'What is the name of the street you grew up on?',
+    9 => 'What was the name of your first school?',
+    10 => 'What is your favorite book?'
+];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = trim($_POST['username']);
@@ -17,11 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $answer = trim($_POST['answer']);
 
     try {
-        $stmt = $conn->prepare("INSERT INTO users (username, email, password, full_name, address, phone, role) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$username, $email, $password, $full_name, $address, $phone, $role]);
-        $user_id = $conn->lastInsertId();
-        $stmt = $conn->prepare("INSERT INTO user_security_answers (user_id, question_id, answer) VALUES (?, ?, ?)");
-        $stmt->execute([$user_id, $question_id, $answer]);
+        $stmt = $conn->prepare("INSERT INTO users (username, email, password, full_name, address, phone, role, security_question_id, security_answer) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$username, $email, $password, $full_name, $address, $phone, $role, $question_id, $answer]);
         $_SESSION['success'] = "Registration successful! Please login.";
         header("Location: login.php");
         exit();
@@ -40,6 +48,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/vehicle-accessory-store/main.css">
+    <style>
+        .auth-panel {
+            max-width: 700px !important;
+            padding: 3.5rem 2.5rem 3rem 2.5rem !important;
+        }
+    </style>
 </head>
 <body class="auth-bg">
     <div class="vehicle-anim-bg">
@@ -60,7 +74,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <img src="/vehicle-accessory-store/assets/images/car-svgrepo-com (2).svg" class="vehicle15" alt="Animated Car 15" />
         <img src="/vehicle-accessory-store/assets/images/car-svgrepo-com (3).svg" class="vehicle16" alt="Animated Car 16" />
     </div>
-    <a href="/vehicle-accessory-store/index.php" class="btn btn-outline-light position-absolute top-0 start-0 m-4" style="z-index:10;">&larr; Home</a>
+    <div class="d-flex justify-content-end mb-3">
+        <a href="/vehicle-accessory-store/index.php" class="btn home-btn">
+            <i class="bi bi-house-door-fill me-2"></i> Home
+        </a>
+    </div>
     <div class="auth-panel">
         <div class="mb-4 d-flex align-items-center gap-2">
             <i class="bi bi-gear" style="font-size:2.2rem;color:#3ea6ff;"></i>
@@ -73,24 +91,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="alert alert-danger"><?php echo $error; ?></div>
         <?php endif; ?>
         <form method="POST" action="">
-            <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
-            <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Full Name" required>
-            <textarea class="form-control" id="address" name="address" placeholder="Address" required></textarea>
-            <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone" required>
-            <select class="form-control mt-2" name="role" required>
-                <option value="customer">Customer</option>
-                <option value="seller">Seller</option>
-            </select>
-            <select class="form-control mt-2" name="question_id" required>
-                <option value="">Select a security question</option>
-                <?php foreach ($questions as $q): ?>
-                    <option value="<?php echo $q['id']; ?>"><?php echo htmlspecialchars($q['question']); ?></option>
-                <?php endforeach; ?>
-            </select>
-            <input type="text" class="form-control mt-2" name="answer" placeholder="Your Answer" required>
-            <div class="d-flex gap-2 mt-2">
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                    <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Full Name" required>
+                </div>
+                <div class="col-md-6">
+                    <textarea class="form-control" id="address" name="address" placeholder="Address" required></textarea>
+                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone" required>
+                    <select class="form-control" name="role" required>
+                        <option value="customer">Customer</option>
+                        <option value="seller">Seller</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <select class="form-control" name="question_id" required>
+                        <option value="">Select a security question</option>
+                        <?php foreach ($security_questions as $id => $question): ?>
+                            <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($question); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="answer" placeholder="Your Answer" required>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-3">
                 <button type="submit" class="btn btn-primary flex-fill">Create account</button>
             </div>
         </form>

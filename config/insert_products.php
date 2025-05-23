@@ -20,7 +20,8 @@ $products = [
         'price' => 299.99,
         'category' => 'Lighting',
         'image_path' => '/vehicle-accessory-store/product_images/led-headlight.jpg',
-        'user_id' => 1
+        'user_id' => 1,
+        'stock' => 10
     ],
     [
         'name' => 'Car Floor Mat Set',
@@ -28,7 +29,8 @@ $products = [
         'price' => 149.99,
         'category' => 'Interior Accessories',
         'image_path' => '/vehicle-accessory-store/product_images/floor-mats.jpg',
-        'user_id' => 1
+        'user_id' => 1,
+        'stock' => 10
     ],
     [
         'name' => 'Chrome Wheel Covers',
@@ -36,7 +38,8 @@ $products = [
         'price' => 399.99,
         'category' => 'Exterior Accessories',
         'image_path' => '/vehicle-accessory-store/product_images/wheel-covers.jpg',
-        'user_id' => 1
+        'user_id' => 1,
+        'stock' => 10
     ],
     [
         'name' => 'Car Phone Mount',
@@ -44,7 +47,8 @@ $products = [
         'price' => 49.99,
         'category' => 'Electronics',
         'image_path' => '/vehicle-accessory-store/product_images/phone-mount.jpg',
-        'user_id' => 1
+        'user_id' => 1,
+        'stock' => 10
     ],
     [
         'name' => 'Car Cover',
@@ -52,7 +56,8 @@ $products = [
         'price' => 199.99,
         'category' => 'Exterior Accessories',
         'image_path' => '/vehicle-accessory-store/product_images/car-cover.jpg',
-        'user_id' => 1
+        'user_id' => 1,
+        'stock' => 10
     ],
     [
         'name' => 'Dash Camera',
@@ -60,7 +65,8 @@ $products = [
         'price' => 449.99,
         'category' => 'Electronics',
         'image_path' => '/vehicle-accessory-store/product_images/dash-camera.jpg',
-        'user_id' => 1
+        'user_id' => 1,
+        'stock' => 10
     ],
     [
         'name' => 'Steering Wheel Cover',
@@ -68,7 +74,8 @@ $products = [
         'price' => 79.99,
         'category' => 'Interior Accessories',
         'image_path' => '/vehicle-accessory-store/product_images/steering-cover.jpg',
-        'user_id' => 1
+        'user_id' => 1,
+        'stock' => 10
     ],
     [
         'name' => 'Car Air Freshener',
@@ -76,7 +83,8 @@ $products = [
         'price' => 29.99,
         'category' => 'Interior Accessories',
         'image_path' => '/vehicle-accessory-store/product_images/air-freshener.jpg',
-        'user_id' => 1
+        'user_id' => 1,
+        'stock' => 10
     ],
     [
         'name' => 'Tire Pressure Gauge',
@@ -84,7 +92,8 @@ $products = [
         'price' => 39.99,
         'category' => 'Maintenance',
         'image_path' => '/vehicle-accessory-store/product_images/tire-gauge.jpg',
-        'user_id' => 1
+        'user_id' => 1,
+        'stock' => 10
     ],
     [
         'name' => 'Car Wash Kit',
@@ -92,13 +101,14 @@ $products = [
         'price' => 129.99,
         'category' => 'Maintenance',
         'image_path' => '/vehicle-accessory-store/product_images/wash-kit.jpg',
-        'user_id' => 1
+        'user_id' => 1,
+        'stock' => 10
     ]
 ];
 
 try {
     // Prepare the SQL statement
-    $stmt = $conn->prepare("INSERT INTO products (name, description, price, category_id, image_path, user_id) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO products (name, description, price, category_id, image_path, user_id, stock) VALUES (?, ?, ?, ?, ?, ?, ?)");
     
     // Insert each product
     foreach ($products as $product) {
@@ -116,7 +126,8 @@ try {
             $product['price'],
             $category_id,
             $product['image_path'],
-            $product['user_id']
+            $product['user_id'],
+            $product['stock']
         ]);
     }
     

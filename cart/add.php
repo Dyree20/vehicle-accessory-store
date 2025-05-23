@@ -12,11 +12,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['product_id'])) {
     $user_id = $_SESSION['user_id'];
 
     try {
-        // Check if product exists
-        $stmt = $conn->prepare("SELECT id FROM products WHERE id = ?");
+        // Check if product exists and get stock
+        $stmt = $conn->prepare("SELECT id, stock FROM products WHERE id = ?");
         $stmt->execute([$product_id]);
-        if (!$stmt->fetch()) {
+        $product = $stmt->fetch();
+        if (!$product) {
             throw new Exception("Product not found");
+        }
+        if ($product['stock'] == 0) {
+            throw new Exception("Product is sold out");
         }
 
         // Check if product is already in cart

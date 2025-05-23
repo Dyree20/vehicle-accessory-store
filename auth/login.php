@@ -47,7 +47,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <img src="/vehicle-accessory-store/assets/images/car-svgrepo-com (2).svg" class="vehicle7" alt="Animated Car 7" />
         <img src="/vehicle-accessory-store/assets/images/car-svgrepo-com (3).svg" class="vehicle8" alt="Animated Car 8" />
     </div>
-    <a href="/vehicle-accessory-store/index.php" class="btn btn-outline-light position-absolute top-0 start-0 m-4" style="z-index:10;">&larr; Home</a>
+    <div class="d-flex justify-content-end mb-3">
+        <a href="/vehicle-accessory-store/index.php" class="btn home-btn">
+            <i class="bi bi-house-door-fill me-2"></i> Home
+        </a>
+    </div>
     <div class="auth-panel">
         <div class="mb-4 d-flex align-items-center gap-2">
             <i class="bi bi-truck" style="font-size:2.2rem;color:#3ea6ff;"></i>
@@ -69,6 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <button type="submit" class="btn btn-primary flex-fill">Login</button>
             </div>
         </form>
+        <p class="text-center mt-3">
+            <a href="forgot_password.php" class="text-decoration-none" style="color:#3ea6ff;">Forgot password?</a>
+        </p>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/vehicle-accessory-store/assets/js/vehicle-animation.js"></script>

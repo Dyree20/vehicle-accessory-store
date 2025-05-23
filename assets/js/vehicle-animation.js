@@ -1,61 +1,93 @@
 document.addEventListener('DOMContentLoaded', function() {
     const vehicles = document.querySelectorAll('.vehicle-anim-bg img');
     const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
     
-    // Initialize vehicles with random positions and speeds
+    // Initialize vehicles with random positions, speeds, and directions
     vehicles.forEach(vehicle => {
         const randomX = Math.random() * screenWidth;
+        const randomY = Math.random() * screenHeight;
         const speed = 0.5 + Math.random() * 1.5; // Random speed between 0.5 and 2
-        vehicle.style.transform = `translateX(${randomX}px)`;
+        const angle = Math.random() * 2 * Math.PI; // Random direction in radians
+        vehicle.style.transform = `translate(${randomX}px, ${randomY}px)`;
+        vehicle.dataset.x = randomX;
+        vehicle.dataset.y = randomY;
         vehicle.dataset.speed = speed;
+        vehicle.dataset.angle = angle;
     });
 
     let lastTime = performance.now();
 
-    // Function to move vehicles continuously
+    function getBGWidth() {
+        return Math.max(
+            document.body.scrollWidth,
+            document.documentElement.scrollWidth,
+            document.body.offsetWidth,
+            document.documentElement.offsetWidth,
+            document.documentElement.clientWidth
+        );
+    }
+    function getBGHeight() {
+        return Math.max(
+            document.body.scrollHeight,
+            document.documentElement.scrollHeight,
+            document.body.offsetHeight,
+            document.documentElement.offsetHeight,
+            document.documentElement.clientHeight
+        );
+    }
+
     function moveVehicles(currentTime) {
         const deltaTime = currentTime - lastTime;
         lastTime = currentTime;
+        const width = getBGWidth();
+        const height = getBGHeight();
 
         vehicles.forEach(vehicle => {
-            // Get current position
-            const currentTransform = vehicle.style.transform;
-            const currentX = parseFloat(currentTransform.match(/translateX\(([-\d.]+)px/)?.[1] || 0);
-            const speed = parseFloat(vehicle.dataset.speed);
-            
-            // Calculate new position with varying speeds
-            let newX = currentX + (speed * deltaTime * 0.1); // Scale speed with time
-            
-            // Reset position if vehicle goes off screen
-            if (newX > screenWidth + 200) {
-                newX = -200;
-                // Randomize speed when vehicle resets
-                vehicle.dataset.speed = 0.5 + Math.random() * 1.5;
+            let x = parseFloat(vehicle.dataset.x);
+            let y = parseFloat(vehicle.dataset.y);
+            let speed = parseFloat(vehicle.dataset.speed);
+            let angle = parseFloat(vehicle.dataset.angle);
+            const vWidth = vehicle.offsetWidth || 120;
+            const vHeight = vehicle.offsetHeight || 60;
+
+            // Move
+            x += Math.cos(angle) * speed * deltaTime * 0.1;
+            y += Math.sin(angle) * speed * deltaTime * 0.1;
+
+            // Bounce off edges
+            let bounced = false;
+            if (x < -vWidth) { x = -vWidth; angle = Math.PI - angle; bounced = true; }
+            if (x > width) { x = width; angle = Math.PI - angle; bounced = true; }
+            if (y < -vHeight) { y = -vHeight; angle = -angle; bounced = true; }
+            if (y > height) { y = height; angle = -angle; bounced = true; }
+            if (bounced) {
+                // Add a little randomness to the angle after bounce
+                angle += (Math.random() - 0.5) * 0.5;
             }
-            
-            // Apply new position
-            vehicle.style.transform = `translateX(${newX}px)`;
+
+            vehicle.dataset.x = x;
+            vehicle.dataset.y = y;
+            vehicle.dataset.angle = angle;
+            vehicle.style.transform = `translate(${x}px, ${y}px)`;
         });
-        
-        // Continue animation
+
         requestAnimationFrame(moveVehicles);
     }
 
-    // Start the animation
     requestAnimationFrame(moveVehicles);
 
     // Handle window resize
     window.addEventListener('resize', function() {
-        const newScreenWidth = window.innerWidth;
-        
+        const width = getBGWidth();
+        const height = getBGHeight();
         vehicles.forEach(vehicle => {
-            const currentTransform = vehicle.style.transform;
-            const currentX = parseFloat(currentTransform.match(/translateX\(([-\d.]+)px/)?.[1] || 0);
-            
-            // Adjust position if vehicle is off screen after resize
-            if (currentX > newScreenWidth + 200) {
-                vehicle.style.transform = `translateX(${newScreenWidth + 200}px)`;
-            }
+            let x = parseFloat(vehicle.dataset.x);
+            let y = parseFloat(vehicle.dataset.y);
+            const vWidth = vehicle.offsetWidth || 120;
+            const vHeight = vehicle.offsetHeight || 60;
+            if (x > width) vehicle.dataset.x = width - vWidth;
+            if (y > height) vehicle.dataset.y = height - vHeight;
         });
     });
 }); 
